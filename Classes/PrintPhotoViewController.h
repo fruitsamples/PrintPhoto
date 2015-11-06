@@ -42,7 +42,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2010 Apple Inc. All Rights Reserved.
+ Copyright (C) 2010-2011 Apple Inc. All Rights Reserved.
  
 */
 
@@ -54,7 +54,6 @@
   UIBarButtonItem *printButton;
   UIBarButtonItem *pickerButton;
   NSURL		  *imageURL;
-  ALAsset	  *imageAsset;
   UIPopoverController *popover;
 }
 
@@ -62,7 +61,6 @@
 @property (retain, readwrite) UIBarButtonItem *printButton;
 @property (retain, readwrite) UIBarButtonItem *pickerButton;
 @property (retain, readwrite) NSURL	      *imageURL;
-@property (retain, readwrite) ALAsset	      *imageAsset;
 @property (retain, readwrite) UIPopoverController *popover;
 
 @end

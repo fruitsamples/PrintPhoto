@@ -24,17 +24,17 @@ To have the UIPrintPageRenderer object draw the printable content, comment out t
 =========================================================================
 RELATED INFORMATION:
 
-Tip:  You can easily add photos to the photo library in the simulator by dragging an image onto the simulator which
-      will load the image in Safari. If you then touch and hold the image, you will get a popover giving you a choice
-      of copying the image to the pasteboard or saving it to the photo library.
+Tips: 
+  
+You can easily add photos to the photo library in the simulator by dragging an image onto the simulator which will load the image in Safari. If you then touch and hold the image, you will get a popover giving you a choice of copying the image to the pasteboard or saving it to the photo library.
       
-      Another approach is to email some photos to yourself and then save those photos to the photo library in the simulator by using the Mail application.
+Another approach is to email some photos to yourself and then save those photos to the photo library in the simulator by using the Mail application.
 
 
 =========================================================================
 BUILD REQUIREMENTS:
 
-XCode 3.2.5, Mac OS X 10.6.4 or later
+iOS 5.0 SDK or later
 
 
 =========================================================================
@@ -62,7 +62,11 @@ An image to present as the first image for a user to see (and print) prior to pi
 =========================================================================
 CHANGES FROM PREVIOUS VERSIONS:
 
-9/22/2010 - First version.
+9/13/2011 - Version 1.1
+
+-   Updated to reflect changes for iOS 5. Use the asset URL rather than the ALAsset itself as the item to print when doing direct submission. Add conditional code so that the screen image orientation is applied to the CGImage obtained from fullScreenImage only when running on iOS prior to iOS 5. In iOS 5.0 and later the orientation is already baked into the screen image provided from the asset.
+
+9/22/2010 - Version 1.0.
 
 =========================================================================
-Copyright (C) 2010 Apple Inc.  All rights reserved.
+Copyright (C) 2010-2011 Apple Inc.  All rights reserved.

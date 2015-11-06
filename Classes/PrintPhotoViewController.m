@@ -42,7 +42,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2010 Apple Inc. All Rights Reserved.
+ Copyright (C) 2010-2011 Apple Inc. All Rights Reserved.
  
  */
 
@@ -52,7 +52,7 @@
 
 @implementation PrintPhotoViewController
 
-@synthesize toolbar, printButton, pickerButton, imageURL, imageAsset, popover;
+@synthesize toolbar, printButton, pickerButton, imageURL, popover;
 
 // Comment out to draw at print time rather than hand the image off to UIKit.
 // When printing single images on a page, using "direct submission" is the preferred 
@@ -81,7 +81,6 @@
    self.printButton = nil;
    self.pickerButton = nil;
    self.imageURL = nil;
-   self.imageAsset = nil;
    [super dealloc];
 }
 
@@ -151,7 +150,6 @@
     self.printButton = nil;
     self.pickerButton = nil;
     self.imageURL = nil;
-    self.imageAsset = nil;
     [super viewDidUnload];
 }
 
@@ -203,11 +201,7 @@
   
   
 #if DIRECT_SUBMISSION
-  // If we have an image asset, give that to UIKit, otherwise the URL of the image. UIKit can
-  // deal with either one.
-  if(self.imageAsset)
-    controller.printingItem = self.imageAsset;
-  else 
+  // Use the URL of the image asset.
     if(self.imageURL && [UIPrintInteractionController canPrintURL:self.imageURL])
       controller.printingItem = self.imageURL;
 #endif
@@ -281,16 +275,27 @@
 #if USE_SCREEN_IMAGE      
    // To get an asset library reference we need an instance of the asset library.
     ALAssetsLibrary* assetsLibrary = [[ALAssetsLibrary alloc] init];
+    NSString *osVersion = [[UIDevice currentDevice] systemVersion];
+    NSString *versionWithoutRotation = @"5.0";
+    BOOL noRotationNeeded = ([versionWithoutRotation compare:osVersion options:NSNumericSearch] 
+                             != NSOrderedDescending);
     // The assetForURL: method of the assets library needs a block for success and
     // one for failure. The resultsBlock is used for the success case.
     ALAssetsLibraryAssetForURLResultBlock resultsBlock = ^(ALAsset *asset) {
-      self.imageAsset = asset;
       ALAssetRepresentation *representation = [asset defaultRepresentation];
       CGImageRef image = [representation fullScreenImage];
-      // Make sure that the UIImage we create from the CG image has the appropriate
-      // orientation, based on the EXIF data from the image.
-      ALAssetOrientation orientation = [representation orientation];
-      imageView.image = [UIImage imageWithCGImage:image scale:1.0 orientation:(UIImageOrientation)orientation];
+      if(noRotationNeeded){
+        // Create a UIImage from the full screen image. The full screen image
+        // is already scaled and oriented properly.
+        imageView.image = [UIImage imageWithCGImage:image];
+      }else{
+        // prior to iOS 5.0, the screen image needed to be rotated so
+        // make sure that the UIImage we create from the CG image has the appropriate
+        // orientation, based on the EXIF data from the image.
+        ALAssetOrientation orientation = [representation orientation];
+        imageView.image = [UIImage imageWithCGImage:image scale:1.0 
+                                        orientation:(UIImageOrientation)orientation];
+      }
     };
     ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error){
       /*  A failure here typically indicates that the user has not allowed this app access
@@ -305,7 +310,7 @@
       abort();
     };
 
-    // Get the asset for the asset URL.
+    // Get the asset for the asset URL to create a screen image.
     [assetsLibrary assetForURL:self.imageURL resultBlock:resultsBlock failureBlock:failureBlock];
     // Release the assets library now that we are done with it.
     [assetsLibrary release];
